@@ -1,0 +1,19 @@
+{
+  "name": "embedchain",
+  "version": "0.0.2",
+  "description": "embedchain is a framework to easily create LLM powered bots over any dataset",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Taranjeet Singh",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "axios": "^1.4.0",
+    "chromadb": "^1.5.2",
+    "jsdom": "^22.1.0",
+    "langchain": "^0.0.96",
+    "openai": "^3.3.0",
+    "pdfjs-dist": "^3.8.162"
+  }
+}
