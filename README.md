@@ -204,6 +204,13 @@ embedchain is built on the following stack:
 - [OpenAI's ChatGPT API](https://platform.openai.com/docs/guides/gpt/chat-completions-api) as LLM to get answers given the context
 - [Chroma](https://github.com/chroma-core/chroma) as the vector database to store embeddings
 
-# Author
+# Team
+
+## Author
 
 - Taranjeet Singh ([@taranjeetio](https://twitter.com/taranjeetio))
+
+## Maintainer
+
+- [cachho](https://github.com/cachho)
+- [sahilyadav902](https://github.com/sahilyadav902)
