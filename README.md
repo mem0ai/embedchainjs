@@ -214,3 +214,17 @@ embedchain is built on the following stack:
 
 - [cachho](https://github.com/cachho)
 - [sahilyadav902](https://github.com/sahilyadav902)
+
+## Citation
+
+If you utilize this repository, please consider citing it with:
+```
+@misc{embedchain,
+  author = {Taranjeet Singh},
+  title = {Embechain: Framework to easily create LLM powered bots over any dataset},
+  year = {2023},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/embedchain/embedchainjs}},
+}
+```
