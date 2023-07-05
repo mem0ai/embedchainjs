@@ -2,9 +2,16 @@
   "name": "embedchain",
   "version": "0.0.2",
   "description": "embedchain is a framework to easily create LLM powered bots over any dataset",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "types/index.d.ts",
+  "files": [
+    "dist",
+    "types"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc -p tsconfig.build.json --listFiles",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "check-types": "tsc --noEmit --pretty"
   },
   "author": "Taranjeet Singh",
   "license": "Apache-2.0",
@@ -15,5 +22,10 @@
     "langchain": "^0.0.96",
     "openai": "^3.3.0",
     "pdfjs-dist": "^3.8.162"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^21.1.1",
+    "ts-loader": "^9.4.2",
+    "typescript": "^5.0.4"
   }
 }
