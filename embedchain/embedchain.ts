@@ -16,7 +16,7 @@ import { ChromaDB } from "./vectordb";
 import { DataDict, DataType, FormattedResult, Input, LocalInput, RemoteInput } from "./models";
 import { Collection } from "chromadb";
 import { QueryResponse } from "chromadb/dist/main/types";
-import { BaseVectorDB } from "./vectordb/base_vector_db";
+import { BaseVectorDB } from "./vectordb/BaseVectorDb";
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,

@@ -1,3 +1,3 @@
-import { ChromaDB } from "./chroma_db";
+import { ChromaDB } from "./ChromaDb";
 
 export { ChromaDB };

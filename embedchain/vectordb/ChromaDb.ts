@@ -1,5 +1,5 @@
 import { ChromaClient, Collection, OpenAIEmbeddingFunction } from "chromadb";
-import { BaseVectorDB } from "./base_vector_db";
+import { BaseVectorDB } from "./BaseVectorDb";
 
 const embedder = new OpenAIEmbeddingFunction({
   openai_api_key: process.env.OPENAI_API_KEY ?? '',
