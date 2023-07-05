@@ -1,5 +1,7 @@
-import pdfjsLib from "pdfjs-dist";
+const pdfjsLib = require("pdfjs-dist");
 import { clean_string } from "../utils";
+import { LoaderResult, Metadata } from "../models";
+import { TextContent } from 'pdfjs-dist/types/src/display/api';
 
 interface Page {
   page_content: string;
@@ -9,12 +11,14 @@ class PdfFileLoader {
   async get_pages_from_pdf(url: string): Promise<Page[]> {
     const loadingTask = pdfjsLib.getDocument(url);
     const pdf = await loadingTask.promise;
-    const numPages = pdf.numPages;
+    const numPages: number = pdf.numPages;
     const extractedPages: Page[] = [];
+
     for (let i = 1; i <= numPages; i++) {
       const page = await pdf.getPage(i);
-      const pageText = await page.getTextContent();
-      const pageContent = pageText.items.map((item) => ('str' in item) ? item.str : '').join(" ");
+      const pageText: TextContent = await page.getTextContent();
+      const pageContent: string = pageText.items.map((item) => ('str' in item) ? item.str : '').join(" ");
+      
       extractedPages.push({
         page_content: pageContent,
       });
@@ -22,20 +26,22 @@ class PdfFileLoader {
     return extractedPages;
   }
 
-  async load_data(url: string) {
-    const pages = await this.get_pages_from_pdf(url);
-    const output = [];
+  async load_data(url: string): Promise<LoaderResult> {
+    const pages: Page[] = await this.get_pages_from_pdf(url);
+    const output: LoaderResult = [];
+
     if (!pages.length) {
       throw new Error("No data found");
     }
+
     for (const page of pages) {
-      let content = page.page_content;
+      let content: string = page.page_content;
       content = clean_string(content);
-      const meta_data = {
+      const meta_data: Metadata = {
         url: url,
       };
       output.push({
-        content: content,
+        content,
         meta_data: meta_data,
       });
     }
