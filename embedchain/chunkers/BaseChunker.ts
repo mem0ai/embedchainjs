@@ -1,15 +1,20 @@
-const { createHash } = require("crypto");
+import { createHash } from "crypto";
+import { BaseLoader, } from "../loaders";
+import { Input, LoaderResult } from "../models";
+import { ChunkResult } from "../models/ChunkResult";
 
 class BaseChunker {
-  constructor(text_splitter) {
+  text_splitter: any;  // the type of text_splitter is not specified in your code
+
+  constructor(text_splitter: any) {
     this.text_splitter = text_splitter;
   }
 
-  async create_chunks(loader, url) {
-    const documents = [];
-    const ids = [];
-    const datas = await loader.load_data(url);
-    const metadatas = [];
+  async create_chunks(loader: BaseLoader, url: Input): Promise<ChunkResult> {
+    const documents: ChunkResult['documents'] = [];
+    const ids: ChunkResult['ids'] = [];
+    const datas: LoaderResult = await loader.load_data(url);
+    const metadatas: ChunkResult['metadatas'] = [];
     for (const data of datas) {
       const content = data["content"];
       const meta_data = data["meta_data"];
@@ -32,4 +37,4 @@ class BaseChunker {
   }
 }
 
-module.exports = { BaseChunker };
+export { BaseChunker };

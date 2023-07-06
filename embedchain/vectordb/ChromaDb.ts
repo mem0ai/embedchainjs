@@ -1,17 +1,20 @@
-const { ChromaClient, OpenAIEmbeddingFunction } = require("chromadb");
-const { BaseVectorDB } = require("./base_vector_db");
+import { ChromaClient, Collection, OpenAIEmbeddingFunction } from "chromadb";
+import { BaseVectorDB } from "./BaseVectorDb";
 
 const embedder = new OpenAIEmbeddingFunction({
-  openai_api_key: process.env.OPENAI_API_KEY,
+  openai_api_key: process.env.OPENAI_API_KEY ?? '',
 });
 
 class ChromaDB extends BaseVectorDB {
+  client: ChromaClient | undefined;
+  collection: Collection | null = null;
+
   constructor() {
     super();
   }
 
-  async get_client_and_collection() {
-    this.client = new ChromaClient("http://localhost:8000");
+  async get_client_and_collection(): Promise<void> {
+    this.client = new ChromaClient({path: "http://localhost:8000"});
     try {
       this.collection = await this.client.getCollection({
         name: "embedchain_store",
@@ -28,4 +31,4 @@ class ChromaDB extends BaseVectorDB {
   }
 }
 
-module.exports = { ChromaDB };
+export { ChromaDB };
