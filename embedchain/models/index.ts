@@ -1,13 +1,19 @@
-import { DataType } from "./DataType";
-import {
-  LocalInput,
-  RemoteInput,
-  Input,
-} from "./Input";
-import { LoaderResult } from "./LoaderResult";
-import { QnaPair } from "./QnAPair";
-import { Metadata } from "./Metadata";
-import { DataDict } from "./DataDict";
-import { FormattedResult } from "./FormattedResult";
+import { DataDict } from './DataDict';
+import { DataType } from './DataType';
+import { FormattedResult } from './FormattedResult';
+import { Input, LocalInput, RemoteInput } from './Input';
+import { LoaderResult } from './LoaderResult';
+import { Metadata } from './Metadata';
+import { QnaPair } from './QnAPair';
 
-export { DataType, DataDict, Input, RemoteInput, LocalInput, QnaPair, LoaderResult, Metadata, FormattedResult };
+export {
+  DataDict,
+  DataType,
+  FormattedResult,
+  Input,
+  LoaderResult,
+  LocalInput,
+  Metadata,
+  QnaPair,
+  RemoteInput,
+};

@@ -1,3 +1,3 @@
-import { Document } from "langchain/document";
+import type { Document } from 'langchain/document';
 
-export type FormattedResult = [Document, number | null]
+export type FormattedResult = [Document, number | null];

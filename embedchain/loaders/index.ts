@@ -1,6 +1,6 @@
-import { LocalQnaPairLoader } from "./LocalQnaPair";
-import { PdfFileLoader } from "./PdfFile";
-import { WebPageLoader } from "./WebPage";
-import { BaseLoader } from "./BaseLoader";
+import { BaseLoader } from './BaseLoader';
+import { LocalQnaPairLoader } from './LocalQnaPair';
+import { PdfFileLoader } from './PdfFile';
+import { WebPageLoader } from './WebPage';
 
-export {LocalQnaPairLoader, PdfFileLoader, WebPageLoader, BaseLoader};
+export { BaseLoader, LocalQnaPairLoader, PdfFileLoader, WebPageLoader };

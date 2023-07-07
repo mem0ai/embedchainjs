@@ -1,3 +1,3 @@
-import { Metadata } from "./Metadata";
+import type { Metadata } from './Metadata';
 
-export type LoaderResult = { content: any; meta_data: Metadata }[];
+export type LoaderResult = { content: any; metaData: Metadata }[];
