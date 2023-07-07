@@ -185,6 +185,12 @@ class EmbedChain {
     const answer = await EmbedChain.getAnswerFromLlm(prompt);
     return answer;
   }
+
+  public async dryRun(input_query: string) {
+    const context = await this.retrieveFromDatabase(input_query);
+    const prompt = EmbedChain.generatePrompt(input_query, context);
+    return prompt;
+  }
 }
 
 class EmbedChainApp extends EmbedChain {

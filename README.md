@@ -168,6 +168,29 @@ await app.add_local("qna_pair", ["Question", "Answer"]);
 
 - If you want to add any other format, please create an [issue](https://github.com/embedchain/embedchainjs/issues) and we will add it to the list of supported formats.
 
+## Testing
+
+Before you consume valueable tokens, you should make sure that the embedding you have done works and that it's receiving the correct document from the database.
+
+For this you can use the `dryRun` method.
+
+Following the example above, add this to your script:
+
+```js
+let result = await naval_chat_bot.dryRun("What unique capacity does Naval argue humans possess when it comes to understanding explanations or concepts?");console.log(result);
+
+'''
+Use the following pieces of context to answer the query at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.
+terms of the unseen. And I think that’s critical. That is what humans do uniquely that no other creature, no other computer, no other intelligence—biological or artificial—that we have ever encountered does. And not only do we do it uniquely, but if we were to meet an alien species that also had the power to generate these good explanations, there is no explanation that they could generate that we could not understand. We are maximally capable of understanding. There is no concept out there that is possible in this physical reality that a human being, given sufficient time and resources and
+Query: What unique capacity does Naval argue humans possess when it comes to understanding explanations or concepts?
+Helpful Answer:
+'''
+```
+
+_The embedding is confirmed to work as expected. It returns the right document, even if the question is asked slightly different. No prompt tokens have been consumed._
+
+**The dry run will still consume tokens to embed your query, but it is only ~1/15 of the prompt.**
+
 # How does it work?
 
 Creating a chat bot over any dataset needs the following steps to happen
