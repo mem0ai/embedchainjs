@@ -1,5 +1,6 @@
-import { BaseChunker } from "./BaseChunker";
-import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
+
+import { BaseChunker } from './BaseChunker';
 
 interface TextSplitterChunkParams {
   chunkSize: number;
@@ -15,10 +16,10 @@ const TEXT_SPLITTER_CHUNK_PARAMS: TextSplitterChunkParams = {
 
 class WebPageChunker extends BaseChunker {
   constructor() {
-    const text_splitter = new RecursiveCharacterTextSplitter(
+    const textSplitter = new RecursiveCharacterTextSplitter(
       TEXT_SPLITTER_CHUNK_PARAMS
     );
-    super(text_splitter);
+    super(textSplitter);
   }
 }
 

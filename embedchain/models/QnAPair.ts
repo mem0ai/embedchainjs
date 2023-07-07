@@ -1,4 +1,4 @@
-type Question = string
-type Answer = string
+type Question = string;
+type Answer = string;
 
 export type QnaPair = [Question, Answer];

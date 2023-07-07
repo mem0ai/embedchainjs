@@ -1,3 +1,3 @@
 export type Metadata = {
-    url: string;
+  url: string;
 };
