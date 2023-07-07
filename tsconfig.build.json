@@ -1,4 +1,4 @@
 {
   "extends": "./tsconfig.json",
-  "exclude": ["embedchain/lib/__tests__"]
+  "exclude": ["embedchain/__tests__"]
 }
