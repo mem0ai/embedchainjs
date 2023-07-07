@@ -26,27 +26,27 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 class EmbedChain {
-  db_client: any;
+  dbClient: any;
 
   // TODO: Definitely assign
   collection!: Collection;
 
-  user_asks: [DataType, Input][] = [];
+  userAsks: [DataType, Input][] = [];
 
-  init_app: Promise<void>;
+  initApp: Promise<void>;
 
   constructor(db: BaseVectorDB | null = null) {
     if (!db) {
-      this.init_app = this.setup_chroma();
+      this.initApp = this.setupChroma();
     } else {
-      this.init_app = this.setup_other(db);
+      this.initApp = this.setupOther(db);
     }
   }
 
-  async setup_chroma(): Promise<void> {
+  async setupChroma(): Promise<void> {
     const db = new ChromaDB();
-    await db.init_db;
-    this.db_client = db.client;
+    await db.initDb;
+    this.dbClient = db.client;
     if (db.collection) {
       this.collection = db.collection;
     } else {
@@ -55,52 +55,48 @@ class EmbedChain {
     }
   }
 
-  async setup_other(db: BaseVectorDB): Promise<void> {
-    await db.init_db;
+  async setupOther(db: BaseVectorDB): Promise<void> {
+    await db.initDb;
     // TODO: Figure out how we can initialize an unknown database.
-    // this.db_client = db.client;
+    // this.dbClient = db.client;
     // this.collection = db.collection;
-    this.user_asks = [];
+    this.userAsks = [];
   }
 
-  static getLoader(data_type: DataType) {
+  static getLoader(dataType: DataType) {
     const loaders: { [t in DataType]: BaseLoader } = {
       pdf_file: new PdfFileLoader(),
       web_page: new WebPageLoader(),
       qna_pair: new LocalQnaPairLoader(),
     };
-    return loaders[data_type];
+    return loaders[dataType];
   }
 
-  static getChunker(data_type: DataType) {
+  static getChunker(dataType: DataType) {
     const chunkers: { [t in DataType]: BaseChunker } = {
       pdf_file: new PdfFileChunker(),
       web_page: new WebPageChunker(),
       qna_pair: new QnaPairChunker(),
     };
-    return chunkers[data_type];
+    return chunkers[dataType];
   }
 
-  public async add(data_type: DataType, url: RemoteInput) {
-    const loader = EmbedChain.getLoader(data_type);
-    const chunker = EmbedChain.getChunker(data_type);
-    this.user_asks.push([data_type, url]);
-    await this.load_and_embed(loader, chunker, url);
+  public async add(dataType: DataType, url: RemoteInput) {
+    const loader = EmbedChain.getLoader(dataType);
+    const chunker = EmbedChain.getChunker(dataType);
+    this.userAsks.push([dataType, url]);
+    await this.loadAndEmbed(loader, chunker, url);
   }
 
-  public async add_local(data_type: DataType, content: LocalInput) {
-    const loader = EmbedChain.getLoader(data_type);
-    const chunker = EmbedChain.getChunker(data_type);
-    this.user_asks.push([data_type, content]);
-    await this.load_and_embed(loader, chunker, content);
+  public async addLocal(dataType: DataType, content: LocalInput) {
+    const loader = EmbedChain.getLoader(dataType);
+    const chunker = EmbedChain.getChunker(dataType);
+    this.userAsks.push([dataType, content]);
+    await this.loadAndEmbed(loader, chunker, content);
   }
 
-  protected async load_and_embed(
-    loader: any,
-    chunker: BaseChunker,
-    src: Input
-  ) {
-    const embeddingsData = await chunker.create_chunks(loader, src);
+  protected async loadAndEmbed(loader: any, chunker: BaseChunker, src: Input) {
+    const embeddingsData = await chunker.createChunks(loader, src);
     let { documents, ids, metadatas } = embeddingsData;
 
     const existingDocs = await this.collection.get({ ids });
@@ -159,18 +155,18 @@ class EmbedChain {
     );
   }
 
-  protected async retrieveFromDatabase(input_query: string) {
+  protected async retrieveFromDatabase(inputQuery: string) {
     const result = await this.collection.query({
       nResults: 1,
-      queryTexts: [input_query],
+      queryTexts: [inputQuery],
     });
     const resultFormatted = await EmbedChain.formatResult(result);
     const content = resultFormatted[0][0].pageContent;
     return content;
   }
 
-  static generatePrompt(input_query: string, context: any) {
-    const prompt = `Use the following pieces of context to answer the query at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.\n${context}\nQuery: ${input_query}\nHelpful Answer:`;
+  static generatePrompt(inputQuery: string, context: any) {
+    const prompt = `Use the following pieces of context to answer the query at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.\n${context}\nQuery: ${inputQuery}\nHelpful Answer:`;
     return prompt;
   }
 
@@ -179,9 +175,9 @@ class EmbedChain {
     return answer;
   }
 
-  public async query(input_query: string) {
-    const context = await this.retrieveFromDatabase(input_query);
-    const prompt = EmbedChain.generatePrompt(input_query, context);
+  public async query(inputQuery: string) {
+    const context = await this.retrieveFromDatabase(inputQuery);
+    const prompt = EmbedChain.generatePrompt(inputQuery, context);
     const answer = await EmbedChain.getAnswerFromLlm(prompt);
     return answer;
   }
@@ -190,7 +186,7 @@ class EmbedChain {
 class EmbedChainApp extends EmbedChain {
   // The EmbedChain app.
   // Has two functions: add and query.
-  // adds(data_type, url): adds the data from the given URL to the vector db.
+  // adds(dataType, url): adds the data from the given URL to the vector db.
   // query(query): finds answer to the given query using vector database and LLM.
 }
 

@@ -19,23 +19,23 @@ const { App } = require("embedchain");
 
 //Run the app commands inside an async function only
 async function testApp() {
-  const naval_chat_bot = await App();
+  const navalChatBot = await App();
 
   // Embed Online Resources
-  await naval_chat_bot.add("web_page", "https://nav.al/feedback");
-  await naval_chat_bot.add("web_page", "https://nav.al/agi");
-  await naval_chat_bot.add(
+  await navalChatBot.add("web_page", "https://nav.al/feedback");
+  await navalChatBot.add("web_page", "https://nav.al/agi");
+  await navalChatBot.add(
     "pdf_file",
     "https://navalmanack.s3.amazonaws.com/Eric-Jorgenson_The-Almanack-of-Naval-Ravikant_Final.pdf"
   );
 
   // Embed Local Resources
-  await naval_chat_bot.add_local("qna_pair", [
+  await navalChatBot.addLocal("qna_pair", [
     "Who is Naval Ravikant?",
     "Naval Ravikant is an Indian-American entrepreneur and investor.",
   ]);
 
-  const result = await naval_chat_bot.query(
+  const result = await navalChatBot.query(
     "What unique capacity does Naval argue humans possess when it comes to understanding explanations or concepts?"
   );
   console.log(result);
@@ -100,23 +100,23 @@ dotenv.config();
 const { App } = require("embedchain");
 
 async function testApp() {
-  const naval_chat_bot = await App();
+  const navalChatBot = await App();
 
   // Embed Online Resources
-  await naval_chat_bot.add("web_page", "https://nav.al/feedback");
-  await naval_chat_bot.add("web_page", "https://nav.al/agi");
-  await naval_chat_bot.add(
+  await navalChatBot.add("web_page", "https://nav.al/feedback");
+  await navalChatBot.add("web_page", "https://nav.al/agi");
+  await navalChatBot.add(
     "pdf_file",
     "https://navalmanack.s3.amazonaws.com/Eric-Jorgenson_The-Almanack-of-Naval-Ravikant_Final.pdf"
   );
 
   // Embed Local Resources
-  await naval_chat_bot.add_local("qna_pair", [
+  await navalChatBot.addLocal("qna_pair", [
     "Who is Naval Ravikant?",
     "Naval Ravikant is an Indian-American entrepreneur and investor.",
   ]);
 
-  const result = await naval_chat_bot.query(
+  const result = await navalChatBot.query(
     "What unique capacity does Naval argue humans possess when it comes to understanding explanations or concepts?"
   );
   console.log(result);
@@ -161,7 +161,7 @@ await app.add("web_page", "a_valid_web_page_url");
 To supply your own QnA pair, use the data_type as `qna_pair` and enter a tuple. Eg:
 
 ```javascript
-await app.add_local("qna_pair", ["Question", "Answer"]);
+await app.addLocal("qna_pair", ["Question", "Answer"]);
 ```
 
 ### More Formats coming soon
