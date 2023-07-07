@@ -1,6 +1,8 @@
 # embedchainjs
 
-[![](https://dcbadge.vercel.app/api/server/nhvCbCtKV?style=flat)](https://discord.gg/nhvCbCtKV)
+[![Discord](https://dcbadge.vercel.app/api/server/nhvCbCtKV?style=flat)](https://discord.gg/6PzXDgEjG5)
+[![Twitter](https://img.shields.io/twitter/follow/embedchain)](https://twitter.com/embedchain)
+[![Substack](https://img.shields.io/badge/Substack-%23006f5c.svg?logo=substack)](https://embedchain.substack.com/)
 
 embedchain is a framework to easily create LLM powered bots over any dataset. embedchainjs is Javascript version of embedchain. If you want a python version, check out [embedchain-python](https://github.com/embedchain/embedchain)
 
