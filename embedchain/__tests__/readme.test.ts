@@ -9,7 +9,7 @@ jest.mock('../embedchain', () => {
     EmbedChainApp: jest.fn().mockImplementation(() => {
       return {
         add: mockAdd,
-        add_local: mockAddLocal,
+        addLocal: mockAddLocal,
         query: mockQuery,
       };
     }),
@@ -37,7 +37,7 @@ describe('Test App', () => {
     );
 
     // Embed Local Resources
-    await navalChatBot.add_local('qna_pair', [
+    await navalChatBot.addLocal('qna_pair', [
       'Who is Naval Ravikant?',
       'Naval Ravikant is an Indian-American entrepreneur and investor.',
     ]);

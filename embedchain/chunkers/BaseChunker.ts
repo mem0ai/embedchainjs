@@ -12,7 +12,7 @@ class BaseChunker {
     this.textSplitter = textSplitter;
   }
 
-  async create_chunks(loader: BaseLoader, url: Input): Promise<ChunkResult> {
+  async createChunks(loader: BaseLoader, url: Input): Promise<ChunkResult> {
     const documents: ChunkResult['documents'] = [];
     const ids: ChunkResult['ids'] = [];
     const datas: LoaderResult = await loader.loadData(url);

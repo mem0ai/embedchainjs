@@ -1,13 +1,13 @@
 class BaseVectorDB {
-  init_db: Promise<void>;
+  initDb: Promise<void>;
 
   constructor() {
-    this.init_db = this.getClientAndCollection();
+    this.initDb = this.getClientAndCollection();
   }
 
   // eslint-disable-next-line class-methods-use-this
   protected async getClientAndCollection(): Promise<void> {
-    throw new Error('get_client_and_collection() method is not implemented');
+    throw new Error('getClientAndCollection() method is not implemented');
   }
 }
 
