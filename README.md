@@ -8,7 +8,7 @@ embedchain is a framework to easily create LLM powered bots over any dataset. em
 
 It abstracts the entire process of loading dataset, chunking it, creating embeddings and then storing in vector database.
 
-You can add a single or multiple dataset using `.add` and `.add_local` function and then use `.query` function to find an answer from the added datasets.
+You can add a single or multiple dataset using `.add` and `.addLocal` function and then use `.query` function to find an answer from the added datasets.
 
 If you want to create a Naval Ravikant bot which has 2 of his blog posts, as well as a question and answer pair you supply, all you need to do is add the links to the blog posts and the QnA pair and embedchain will create a bot for you.
 
