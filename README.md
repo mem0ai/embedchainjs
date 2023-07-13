@@ -55,7 +55,7 @@ testApp();
 npm install embedchain
 ```
 
-- Make sure that dotenv package is installed and your `OPENAI_SECRET_KEY` in a file called `.env` in the root folder. You can install dotenv by
+- Make sure that dotenv package is installed and your `OPENAI_API_KEY` in a file called `.env` in the root folder. You can install dotenv by
 
 ```js
 npm install dotenv
