@@ -7,6 +7,7 @@ import { Configuration, OpenAIApi } from 'openai';
 
 import type { BaseChunker } from './chunkers';
 import { PdfFileChunker, QnaPairChunker, WebPageChunker } from './chunkers';
+import type { AppConfig } from './configs';
 import type { BaseLoader } from './loaders';
 import { LocalQnaPairLoader, PdfFileLoader, WebPageLoader } from './loaders';
 import type {
@@ -15,6 +16,7 @@ import type {
   FormattedResult,
   Input,
   LocalInput,
+  OpenAIModel,
   RemoteInput,
 } from './models';
 import { ChromaDB } from './vectordb';
@@ -35,11 +37,18 @@ class EmbedChain {
 
   initApp: Promise<void>;
 
-  constructor(db: BaseVectorDB | null = null) {
-    if (!db) {
+  model: OpenAIModel = 'gpt-3.5-turbo';
+
+  constructor(appConfig: AppConfig | null = null) {
+    // If a model is defined in the config, set it as the model
+    if (appConfig?.model) {
+      this.model = appConfig.model;
+    }
+
+    if (!appConfig || !appConfig.db) {
       this.initApp = this.setupChroma();
     } else {
-      this.initApp = this.setupOther(db);
+      this.initApp = this.setupOther(appConfig.db);
     }
   }
 
@@ -138,12 +147,12 @@ class EmbedChain {
     });
   }
 
-  static async getOpenAiAnswer(prompt: string) {
+  async getOpenAiAnswer(prompt: string) {
     const messages: ChatCompletionRequestMessage[] = [
       { role: 'user', content: prompt },
     ];
     const response = await openai.createChatCompletion({
-      model: 'gpt-3.5-turbo',
+      model: this.model,
       messages,
       temperature: 0,
       max_tokens: 1000,
@@ -170,15 +179,19 @@ class EmbedChain {
     return prompt;
   }
 
-  static async getAnswerFromLlm(prompt: string) {
-    const answer = await EmbedChain.getOpenAiAnswer(prompt);
+  async getAnswerFromLlm(prompt: string) {
+    const answer = await this.getOpenAiAnswer(prompt);
     return answer;
+  }
+
+  public setModel(model: OpenAIModel) {
+    this.model = model;
   }
 
   public async query(inputQuery: string) {
     const context = await this.retrieveFromDatabase(inputQuery);
     const prompt = EmbedChain.generatePrompt(inputQuery, context);
-    const answer = await EmbedChain.getAnswerFromLlm(prompt);
+    const answer = await this.getAnswerFromLlm(prompt);
     return answer;
   }
 

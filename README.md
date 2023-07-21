@@ -19,7 +19,11 @@ const { App } = require("embedchain");
 
 //Run the app commands inside an async function only
 async function testApp() {
+  // Model defaults to 'gpt-3.5-turbo'
   const navalChatBot = await App();
+
+  // Set a different model
+  navalChatBot.setModel('gpt-4');
 
   // Embed Online Resources
   await navalChatBot.add("web_page", "https://nav.al/feedback");
@@ -100,7 +104,8 @@ dotenv.config();
 const { App } = require("embedchain");
 
 async function testApp() {
-  const navalChatBot = await App();
+  // Specify a different model on initialization
+  const navalChatBot = await App({ model: 'gpt-4' });
 
   // Embed Online Resources
   await navalChatBot.add("web_page", "https://nav.al/feedback");
