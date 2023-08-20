@@ -44,7 +44,7 @@ class EmbedChain {
 
   sId: string; // sessionId
 
-  constructor(db: BaseVectorDB | null = null) {
+  constructor(db?: BaseVectorDB) {
     if (!db) {
       this.initApp = this.setupChroma();
     } else {
