@@ -98,12 +98,21 @@ class EmbedChain {
     const loader = EmbedChain.getLoader(dataType);
     const chunker = EmbedChain.getChunker(dataType);
     this.userAsks.push([dataType, url]);
-    const { countNewChunks } = await this.loadAndEmbed(loader, chunker, url);
+    const { documents, countNewChunks } = await this.loadAndEmbed(
+      loader,
+      chunker,
+      url
+    );
 
     if (this.collectMetrics) {
+      const wordCount = documents.reduce(
+        (sum, document) => sum + document.split(' ').length,
+        0
+      );
+
       this.sendTelemetryEvent('add', {
         data_type: dataType,
-        word_count: 0,
+        word_count: wordCount,
         chunks_count: countNewChunks,
       });
     }
@@ -113,16 +122,21 @@ class EmbedChain {
     const loader = EmbedChain.getLoader(dataType);
     const chunker = EmbedChain.getChunker(dataType);
     this.userAsks.push([dataType, content]);
-    const { countNewChunks } = await this.loadAndEmbed(
+    const { documents, countNewChunks } = await this.loadAndEmbed(
       loader,
       chunker,
       content
     );
 
     if (this.collectMetrics) {
+      const wordCount = documents.reduce(
+        (sum, document) => sum + document.split(' ').length,
+        0
+      );
+
       this.sendTelemetryEvent('add_local', {
         data_type: dataType,
-        word_count: 0,
+        word_count: wordCount,
         chunks_count: countNewChunks,
       });
     }
