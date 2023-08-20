@@ -52,6 +52,7 @@ class EmbedChain {
 
     // Send anonymous telemetry
     this.sId = uuidv4();
+    this.sendTelemetryEvent('init');
   }
 
   async setupChroma(): Promise<void> {
@@ -97,6 +98,7 @@ class EmbedChain {
     const chunker = EmbedChain.getChunker(dataType);
     this.userAsks.push([dataType, url]);
     await this.loadAndEmbed(loader, chunker, url);
+    this.sendTelemetryEvent('add');
   }
 
   public async addLocal(dataType: DataType, content: LocalInput) {
@@ -104,6 +106,7 @@ class EmbedChain {
     const chunker = EmbedChain.getChunker(dataType);
     this.userAsks.push([dataType, content]);
     await this.loadAndEmbed(loader, chunker, content);
+    this.sendTelemetryEvent('add_local');
   }
 
   protected async loadAndEmbed(loader: any, chunker: BaseChunker, src: Input) {
@@ -190,6 +193,7 @@ class EmbedChain {
     const context = await this.retrieveFromDatabase(inputQuery);
     const prompt = EmbedChain.generatePrompt(inputQuery, context);
     const answer = await EmbedChain.getAnswerFromLlm(prompt);
+    this.sendTelemetryEvent('query');
     return answer;
   }
 
@@ -205,6 +209,7 @@ class EmbedChain {
     }
     const url = 'https://api.embedchain.ai/api/v1/telemetry/';
 
+    // Read package version from filesystem (because it's not in the ts root dir)
     const packageJsonPath = path.join(__dirname, '..', 'package.json');
     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
 
@@ -213,16 +218,18 @@ class EmbedChain {
       version: packageJson.version,
       method,
       language: 'js',
+      ...extraMetadata,
     };
 
     const maxRetries = 3;
 
+    // Retry the fetch
     for (let i = 0; i < maxRetries; i += 1) {
       try {
         // eslint-disable-next-line no-await-in-loop
         const response = await fetch(url, {
           method: 'POST',
-          body: JSON.stringify({ metadata: { ...metadata, ...extraMetadata } }),
+          body: JSON.stringify({ metadata }),
         });
 
         if (response.ok) {
