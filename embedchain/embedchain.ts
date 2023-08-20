@@ -40,16 +40,18 @@ class EmbedChain {
 
   initApp: Promise<void>;
 
-  collectMetrics = true;
+  collectMetrics: boolean;
 
   sId: string; // sessionId
 
-  constructor(db?: BaseVectorDB) {
+  constructor(db?: BaseVectorDB, collectMetrics: boolean = true) {
     if (!db) {
       this.initApp = this.setupChroma();
     } else {
       this.initApp = this.setupOther(db);
     }
+
+    this.collectMetrics = collectMetrics;
 
     // Send anonymous telemetry
     this.sId = uuidv4();
