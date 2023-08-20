@@ -1,9 +1,12 @@
 /* eslint-disable max-classes-per-file */
 import type { Collection } from 'chromadb';
 import type { QueryResponse } from 'chromadb/dist/main/types';
+import * as fs from 'fs';
 import { Document } from 'langchain/document';
 import type { ChatCompletionRequestMessage } from 'openai';
 import { Configuration, OpenAIApi } from 'openai';
+import * as path from 'path';
+import { v4 as uuidv4 } from 'uuid';
 
 import type { BaseChunker } from './chunkers';
 import { PdfFileChunker, QnaPairChunker, WebPageChunker } from './chunkers';
@@ -15,6 +18,7 @@ import type {
   FormattedResult,
   Input,
   LocalInput,
+  Method,
   RemoteInput,
 } from './models';
 import { ChromaDB } from './vectordb';
@@ -35,12 +39,19 @@ class EmbedChain {
 
   initApp: Promise<void>;
 
+  collectMetrics = true;
+
+  sId: string; // sessionId
+
   constructor(db: BaseVectorDB | null = null) {
     if (!db) {
       this.initApp = this.setupChroma();
     } else {
       this.initApp = this.setupOther(db);
     }
+
+    // Send anonymous telemetry
+    this.sId = uuidv4();
   }
 
   async setupChroma(): Promise<void> {
@@ -186,6 +197,54 @@ class EmbedChain {
     const context = await this.retrieveFromDatabase(input_query);
     const prompt = EmbedChain.generatePrompt(input_query, context);
     return prompt;
+  }
+
+  protected async sendTelemetryEvent(method: Method, extraMetadata?: object) {
+    if (!this.collectMetrics) {
+      return;
+    }
+    const url = 'https://api.embedchain.ai/api/v1/telemetry/';
+
+    const packageJsonPath = path.join(__dirname, '..', 'package.json');
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+
+    const metadata = {
+      s_id: this.sId,
+      version: packageJson.version,
+      method,
+      language: 'js',
+    };
+
+    const maxRetries = 3;
+
+    for (let i = 0; i < maxRetries; i += 1) {
+      try {
+        // eslint-disable-next-line no-await-in-loop
+        const response = await fetch(url, {
+          method: 'POST',
+          body: JSON.stringify({ metadata: { ...metadata, ...extraMetadata } }),
+        });
+
+        if (response.ok) {
+          // Break out of the loop if the request was successful
+          break;
+        } else {
+          // Log the unsuccessful response (optional)
+          console.error(
+            `Attempt ${i + 1} failed with status:`,
+            response.status
+          );
+        }
+      } catch (error) {
+        // Log the error (optional)
+        console.error(`Attempt ${i + 1} failed with error:`, error);
+      }
+
+      // If this was the last attempt, throw an error or handle the failure
+      if (i === maxRetries - 1) {
+        throw new Error('Max retries reached');
+      }
+    }
   }
 }
 
