@@ -135,9 +135,11 @@ class EmbedChain {
       metadatas = dataValues.map(({ meta }) => meta);
     }
 
+    const countBeforeAddition = await this.count();
     await this.collection.add({ documents, metadatas, ids });
+    const countNewChunks = (await this.count()) - countBeforeAddition;
     console.log(
-      `Successfully saved ${src}. Total chunks count: ${await this.collection.count()}`
+      `Successfully saved ${src}. New chunks count: ${countNewChunks}`
     );
   }
 
