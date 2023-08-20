@@ -203,6 +203,14 @@ class EmbedChain {
     return prompt;
   }
 
+  /**
+   * Count the number of embeddings.
+   * @returns {Promise<number>}: The number of embeddings.
+   */
+  public count(): Promise<number> {
+    return this.collection.count();
+  }
+
   protected async sendTelemetryEvent(method: Method, extraMetadata?: object) {
     if (!this.collectMetrics) {
       return;
