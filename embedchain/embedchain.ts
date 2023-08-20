@@ -18,6 +18,7 @@ import type {
   FormattedResult,
   Input,
   LocalInput,
+  Metadata,
   Method,
   RemoteInput,
 } from './models';
@@ -97,19 +98,46 @@ class EmbedChain {
     const loader = EmbedChain.getLoader(dataType);
     const chunker = EmbedChain.getChunker(dataType);
     this.userAsks.push([dataType, url]);
-    await this.loadAndEmbed(loader, chunker, url);
-    this.sendTelemetryEvent('add');
+    const { countNewChunks } = await this.loadAndEmbed(loader, chunker, url);
+
+    if (this.collectMetrics) {
+      this.sendTelemetryEvent('add', {
+        data_type: dataType,
+        word_count: 0,
+        chunks_count: countNewChunks,
+      });
+    }
   }
 
   public async addLocal(dataType: DataType, content: LocalInput) {
     const loader = EmbedChain.getLoader(dataType);
     const chunker = EmbedChain.getChunker(dataType);
     this.userAsks.push([dataType, content]);
-    await this.loadAndEmbed(loader, chunker, content);
-    this.sendTelemetryEvent('add_local');
+    const { countNewChunks } = await this.loadAndEmbed(
+      loader,
+      chunker,
+      content
+    );
+
+    if (this.collectMetrics) {
+      this.sendTelemetryEvent('add_local', {
+        data_type: dataType,
+        word_count: 0,
+        chunks_count: countNewChunks,
+      });
+    }
   }
 
-  protected async loadAndEmbed(loader: any, chunker: BaseChunker, src: Input) {
+  protected async loadAndEmbed(
+    loader: any,
+    chunker: BaseChunker,
+    src: Input
+  ): Promise<{
+    documents: string[];
+    metadatas: Metadata[];
+    ids: string[];
+    countNewChunks: number;
+  }> {
     const embeddingsData = await chunker.createChunks(loader, src);
     let { documents, ids, metadatas } = embeddingsData;
 
@@ -127,7 +155,7 @@ class EmbedChain {
 
       if (Object.keys(dataDict).length === 0) {
         console.log(`All data from ${src} already exists in the database.`);
-        return;
+        return { documents: [], metadatas: [], ids: [], countNewChunks: 0 };
       }
       ids = Object.keys(dataDict);
       const dataValues = Object.values(dataDict);
@@ -141,6 +169,7 @@ class EmbedChain {
     console.log(
       `Successfully saved ${src}. New chunks count: ${countNewChunks}`
     );
+    return { documents, metadatas, ids, countNewChunks };
   }
 
   static async formatResult(
