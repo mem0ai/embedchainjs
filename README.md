@@ -1,6 +1,6 @@
 # embedchainjs
 
-[![Discord](https://dcbadge.vercel.app/api/server/nhvCbCtKV?style=flat)](https://discord.gg/CUU9FPhRNt)
+[![Discord](https://dcbadge.vercel.app/api/server/CUU9FPhRNt?style=flat)](https://discord.gg/CUU9FPhRNt)
 [![Twitter](https://img.shields.io/twitter/follow/embedchain)](https://twitter.com/embedchain)
 [![Substack](https://img.shields.io/badge/Substack-%23006f5c.svg?logo=substack)](https://embedchain.substack.com/)
 
