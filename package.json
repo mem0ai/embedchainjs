@@ -20,7 +20,7 @@
     "axios": "^1.4.0",
     "chromadb": "^1.5.6",
     "jsdom": "^22.1.0",
-    "langchain": "^0.0.96",
+    "langchain": "^0.0.136",
     "openai": "^3.3.0",
     "pdfjs-dist": "^3.8.162"
   },
