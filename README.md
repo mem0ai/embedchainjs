@@ -58,8 +58,10 @@ testApp();
 - First make sure that you have the package installed. If not, then install it using `npm`
 
 ```bash
-npm install embedchain
+npm install embedchain && npm install -S openai@^3.3.0
 ```
+
+- Currently, it is only compatible with openai 3.X, not the latest version 4.X. Please make sure to use the right version, otherwise you will see the `ChromaDB` error `TypeError: OpenAIApi.Configuration is not a constructor`
 
 - Make sure that dotenv package is installed and your `OPENAI_API_KEY` in a file called `.env` in the root folder. You can install dotenv by
 
