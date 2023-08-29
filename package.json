@@ -18,10 +18,10 @@
   "license": "Apache-2.0",
   "dependencies": {
     "axios": "^1.4.0",
-    "chromadb": "^1.5.2",
+    "chromadb": "^1.5.6",
     "jsdom": "^22.1.0",
-    "langchain": "^0.0.96",
-    "openai": "^3.3.0",
+    "langchain": "^0.0.136",
+    "openai": "^4.3.1",
     "pdfjs-dist": "^3.8.162",
     "uuid": "^9.0.0"
   },
@@ -48,6 +48,6 @@
     "prettier": "^2.7.1",
     "ts-jest": "^29.1.0",
     "ts-loader": "^9.4.2",
-    "typescript": "^5.0.4"
+    "typescript": "^5.2.2"
   }
 }
