@@ -1,8 +1,11 @@
 /* eslint-disable max-classes-per-file */
 import type { Collection } from 'chromadb';
 import type { QueryResponse } from 'chromadb/dist/main/types';
+import * as fs from 'fs';
 import { Document } from 'langchain/document';
 import OpenAI from 'openai';
+import * as path from 'path';
+import { v4 as uuidv4 } from 'uuid';
 
 import type { BaseChunker } from './chunkers';
 import { PdfFileChunker, QnaPairChunker, WebPageChunker } from './chunkers';
@@ -14,6 +17,8 @@ import type {
   FormattedResult,
   Input,
   LocalInput,
+  Metadata,
+  Method,
   RemoteInput,
 } from './models';
 import { ChromaDB } from './vectordb';
@@ -33,12 +38,22 @@ class EmbedChain {
 
   initApp: Promise<void>;
 
-  constructor(db: BaseVectorDB | null = null) {
+  collectMetrics: boolean;
+
+  sId: string; // sessionId
+
+  constructor(db?: BaseVectorDB, collectMetrics: boolean = true) {
     if (!db) {
       this.initApp = this.setupChroma();
     } else {
       this.initApp = this.setupOther(db);
     }
+
+    this.collectMetrics = collectMetrics;
+
+    // Send anonymous telemetry
+    this.sId = uuidv4();
+    this.sendTelemetryEvent('init');
   }
 
   async setupChroma(): Promise<void> {
@@ -83,17 +98,60 @@ class EmbedChain {
     const loader = EmbedChain.getLoader(dataType);
     const chunker = EmbedChain.getChunker(dataType);
     this.userAsks.push([dataType, url]);
-    await this.loadAndEmbed(loader, chunker, url);
+    const { documents, countNewChunks } = await this.loadAndEmbed(
+      loader,
+      chunker,
+      url
+    );
+
+    if (this.collectMetrics) {
+      const wordCount = documents.reduce(
+        (sum, document) => sum + document.split(' ').length,
+        0
+      );
+
+      this.sendTelemetryEvent('add', {
+        data_type: dataType,
+        word_count: wordCount,
+        chunks_count: countNewChunks,
+      });
+    }
   }
 
   public async addLocal(dataType: DataType, content: LocalInput) {
     const loader = EmbedChain.getLoader(dataType);
     const chunker = EmbedChain.getChunker(dataType);
     this.userAsks.push([dataType, content]);
-    await this.loadAndEmbed(loader, chunker, content);
+    const { documents, countNewChunks } = await this.loadAndEmbed(
+      loader,
+      chunker,
+      content
+    );
+
+    if (this.collectMetrics) {
+      const wordCount = documents.reduce(
+        (sum, document) => sum + document.split(' ').length,
+        0
+      );
+
+      this.sendTelemetryEvent('add_local', {
+        data_type: dataType,
+        word_count: wordCount,
+        chunks_count: countNewChunks,
+      });
+    }
   }
 
-  protected async loadAndEmbed(loader: any, chunker: BaseChunker, src: Input) {
+  protected async loadAndEmbed(
+    loader: any,
+    chunker: BaseChunker,
+    src: Input
+  ): Promise<{
+    documents: string[];
+    metadatas: Metadata[];
+    ids: string[];
+    countNewChunks: number;
+  }> {
     const embeddingsData = await chunker.createChunks(loader, src);
     let { documents, ids, metadatas } = embeddingsData;
 
@@ -111,7 +169,7 @@ class EmbedChain {
 
       if (Object.keys(dataDict).length === 0) {
         console.log(`All data from ${src} already exists in the database.`);
-        return;
+        return { documents: [], metadatas: [], ids: [], countNewChunks: 0 };
       }
       ids = Object.keys(dataDict);
       const dataValues = Object.values(dataDict);
@@ -119,10 +177,13 @@ class EmbedChain {
       metadatas = dataValues.map(({ meta }) => meta);
     }
 
+    const countBeforeAddition = await this.count();
     await this.collection.add({ documents, metadatas, ids });
+    const countNewChunks = (await this.count()) - countBeforeAddition;
     console.log(
-      `Successfully saved ${src}. Total chunks count: ${await this.collection.count()}`
+      `Successfully saved ${src}. New chunks count: ${countNewChunks}`
     );
+    return { documents, metadatas, ids, countNewChunks };
   }
 
   static async formatResult(
@@ -176,6 +237,7 @@ class EmbedChain {
     const context = await this.retrieveFromDatabase(inputQuery);
     const prompt = EmbedChain.generatePrompt(inputQuery, context);
     const answer = await EmbedChain.getAnswerFromLlm(prompt);
+    this.sendTelemetryEvent('query');
     return answer;
   }
 
@@ -183,6 +245,65 @@ class EmbedChain {
     const context = await this.retrieveFromDatabase(input_query);
     const prompt = EmbedChain.generatePrompt(input_query, context);
     return prompt;
+  }
+
+  /**
+   * Count the number of embeddings.
+   * @returns {Promise<number>}: The number of embeddings.
+   */
+  public count(): Promise<number> {
+    return this.collection.count();
+  }
+
+  protected async sendTelemetryEvent(method: Method, extraMetadata?: object) {
+    if (!this.collectMetrics) {
+      return;
+    }
+    const url = 'https://api.embedchain.ai/api/v1/telemetry/';
+
+    // Read package version from filesystem (because it's not in the ts root dir)
+    const packageJsonPath = path.join(__dirname, '..', 'package.json');
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+
+    const metadata = {
+      s_id: this.sId,
+      version: packageJson.version,
+      method,
+      language: 'js',
+      ...extraMetadata,
+    };
+
+    const maxRetries = 3;
+
+    // Retry the fetch
+    for (let i = 0; i < maxRetries; i += 1) {
+      try {
+        // eslint-disable-next-line no-await-in-loop
+        const response = await fetch(url, {
+          method: 'POST',
+          body: JSON.stringify({ metadata }),
+        });
+
+        if (response.ok) {
+          // Break out of the loop if the request was successful
+          break;
+        } else {
+          // Log the unsuccessful response (optional)
+          console.error(
+            `Attempt ${i + 1} failed with status:`,
+            response.status
+          );
+        }
+      } catch (error) {
+        // Log the error (optional)
+        console.error(`Attempt ${i + 1} failed with error:`, error);
+      }
+
+      // If this was the last attempt, throw an error or handle the failure
+      if (i === maxRetries - 1) {
+        throw new Error('Max retries reached');
+      }
+    }
   }
 }
 

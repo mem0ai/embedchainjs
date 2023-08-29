@@ -26,7 +26,7 @@ describe('Test App', () => {
       'Naval argues that humans possess the unique capacity to understand explanations or concepts to the maximum extent possible in this physical reality.'
     );
 
-    const navalChatBot = await new EmbedChainApp();
+    const navalChatBot = await new EmbedChainApp(undefined, false);
 
     // Embed Online Resources
     await navalChatBot.add('web_page', 'https://nav.al/feedback');

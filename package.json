@@ -22,7 +22,8 @@
     "jsdom": "^22.1.0",
     "langchain": "^0.0.136",
     "openai": "^4.3.1",
-    "pdfjs-dist": "^3.8.162"
+    "pdfjs-dist": "^3.8.162",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
