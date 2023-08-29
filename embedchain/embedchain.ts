@@ -2,7 +2,8 @@
 import type { Collection } from 'chromadb';
 import type { QueryResponse } from 'chromadb/dist/main/types';
 import { Document } from 'langchain/document';
-import OpenAI from 'openai';
+import type { ChatCompletionRequestMessage } from 'openai';
+import { Configuration, OpenAIApi } from 'openai';
 
 import type { BaseChunker } from './chunkers';
 import { PdfFileChunker, QnaPairChunker, WebPageChunker } from './chunkers';
@@ -19,9 +20,10 @@ import type {
 import { ChromaDB } from './vectordb';
 import type { BaseVectorDB } from './vectordb/BaseVectorDb';
 
-const openai = new OpenAI({
+const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
+const openai = new OpenAIApi(configuration);
 
 class EmbedChain {
   dbClient: any;
@@ -137,10 +139,10 @@ class EmbedChain {
   }
 
   static async getOpenAiAnswer(prompt: string) {
-    const messages: OpenAI.Chat.CreateChatCompletionRequestMessage[] = [
+    const messages: ChatCompletionRequestMessage[] = [
       { role: 'user', content: prompt },
     ];
-    const response = await openai.chat.completions.create({
+    const response = await openai.createChatCompletion({
       model: 'gpt-3.5-turbo',
       messages,
       temperature: 0,
@@ -148,7 +150,8 @@ class EmbedChain {
       top_p: 1,
     });
     return (
-      response.choices[0].message?.content ?? 'Response could not be processed.'
+      response.data.choices[0].message?.content ??
+      'Response could not be processed.'
     );
   }
 
