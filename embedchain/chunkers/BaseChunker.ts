@@ -17,19 +17,20 @@ class BaseChunker {
     const ids: ChunkResult['ids'] = [];
     const datas: LoaderResult = await loader.loadData(url);
     const metadatas: ChunkResult['metadatas'] = [];
-    datas.forEach(async (data) => {
-      const { content } = data;
-      const { metaData } = data;
+
+    for (const data of datas) {
+      const { content, metaData } = data;
       const chunks: string[] = await this.textSplitter.splitText(content);
-      chunks.forEach((chunk) => {
+  
+      for (const chunk of chunks) {
         const chunkId = createHash('sha256')
           .update(chunk + metaData.url)
           .digest('hex');
         ids.push(chunkId);
         documents.push(chunk);
         metadatas.push(metaData);
-      });
-    });
+      }
+    }
     return {
       documents,
       ids,
