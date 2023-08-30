@@ -163,7 +163,7 @@ class EmbedChain {
       for (let i = 0; i < ids.length; i += 1) {
         const id = ids[i];
         if (!existingIds.has(id)) {
-          dataDict.id = { doc: documents[i], meta: metadatas[i] };
+          dataDict[id] = { doc: documents[i], meta: metadatas[i] };
         }
       }
 
