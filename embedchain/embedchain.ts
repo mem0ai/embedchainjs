@@ -290,18 +290,18 @@ class EmbedChain {
         } else {
           // Log the unsuccessful response (optional)
           console.error(
-            `Attempt ${i + 1} failed with status:`,
+            `Telemetry: Attempt ${i + 1} failed with status:`,
             response.status
           );
         }
       } catch (error) {
         // Log the error (optional)
-        console.error(`Attempt ${i + 1} failed with error:`, error);
+        console.error(`Telemetry: Attempt ${i + 1} failed with error:`, error);
       }
 
       // If this was the last attempt, throw an error or handle the failure
       if (i === maxRetries - 1) {
-        throw new Error('Max retries reached');
+        console.error('Telemetry: Max retries reached');
       }
     }
   }
