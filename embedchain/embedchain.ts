@@ -301,7 +301,7 @@ class EmbedChain {
 
       // If this was the last attempt, throw an error or handle the failure
       if (i === maxRetries - 1) {
-        throw new Error('Max retries reached');
+        console.error('Max retries reached');
       }
     }
   }
