@@ -17,9 +17,9 @@ class BaseChunker {
     const ids: ChunkResult['ids'] = [];
     const datas: LoaderResult = await loader.loadData(url);
     const metadatas: ChunkResult['metadatas'] = [];
-    datas.forEach(async (data) => {
-      const { content } = data;
-      const { metaData } = data;
+
+    const dataPromises = datas.map(async (data) => {
+      const { content, metaData } = data;
       const chunks: string[] = await this.textSplitter.splitText(content);
       chunks.forEach((chunk) => {
         const chunkId = createHash('sha256')
@@ -30,6 +30,9 @@ class BaseChunker {
         metadatas.push(metaData);
       });
     });
+
+    await Promise.all(dataPromises);
+
     return {
       documents,
       ids,
